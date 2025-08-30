@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Campus Cycle — Student Marketplace</title>
+  <meta name="description" content="Campus Cycle: a student-to-student marketplace for books, furniture, stationary, utensils, electronics, and more." />
+
+  <!-- Google Font: Source Sans Pro (aka Sans Pro) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Warm neutral palette as requested */
+      --snow: #FFFAFA;
+      --floral-white: #FFFAF0;
+      --seashell: #FFF5EE;
+      --old-lace: #FDF5E6;
+      --beige: #F5F5DC;
+      /* "blane" wasn't clear; assuming BlanchedAlmond */
+      --blanched-almond: #FFEBCD;
+
+      --text-900: #2b2a28;
+      --text-700: #3f3e3b;
+      --text-500: #6d6a64;
+      --muted-300: #d8d5cc;
+      --muted-200: #e9e6de;
+      --accent: #7b6a58; /* soft mocha accent for CTAs */
+      --accent-contrast: #fffefc;
+      --ok: #2e7d32;
+      --warn: #b36b00;
+      --err: #b00020;
+      --shadow: 0 10px 30px rgba(43,42,40,.08), 0 2px 8px rgba(43,42,40,.06);
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --ring: 0 0 0 3px rgba(123,106,88,.18);
+    }
+
+    html, body{
+      font-family: 'Source Sans Pro', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text-900);
+      background: linear-gradient(180deg,var(--snow), var(--floral-white) 30%, var(--seashell));
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* Utility */
+    .container{ width: min(1120px, 92%); margin-inline: auto; }
+    .grid{ display:grid; gap: 1.2rem; }
+    .btn{ display:inline-flex; align-items:center; gap:.5rem; font-weight:700; padding:.9rem 1.1rem; border-radius: var(--radius-lg); border:1px solid transparent; cursor:pointer; transition: all .2s ease; box-shadow: var(--shadow); }
+    .btn-ghost{ background: transparent; border-color: var(--muted-300); box-shadow:none; }
+    .btn-ghost:hover{ background: var(--old-lace); }
+    .btn-primary{ background: var(--accent); color: var(--accent-contrast); }
+    .btn-primary:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(123,106,88,.2); }
+    .chip{ display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .7rem; border-radius:999px; background: var(--old-lace); border:1px solid var(--muted-300); font-weight:600; }
+
+    /* Header */
+    header{ position: sticky; top: 0; background: linear-gradient(180deg,var(--floral-white), var(--seashell)); border-bottom:1px solid var(--muted-200); z-index: 40; backdrop-filter: blur(8px); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; padding: .9rem 0; }
+    .brand{ display:flex; align-items:center; gap:.8rem; font-weight: 800; letter-spacing:.4px; }
+    .brand-logo{ width: 38px; height: 38px; background: var(--blanched-almond); border-radius: 10px; display:grid; place-items:center; box-shadow: var(--shadow); }
+    .brand-logo svg{ width:22px; height:22px; }
+    nav ul{ display:flex; gap: 1rem; align-items:center; }
+    nav a{ text-decoration:none; color: var(--text-700); font-weight:700; padding:.6rem .8rem; border-radius: 10px; }
+    nav a:hover{ background: var(--old-lace); }
+
+    /* Hero */
+    .hero{ position:relative; padding: 3.4rem 0 2.2rem; }
+    .hero-shell{ display:grid; grid-template-columns: 1.2fr .8fr; gap: 2rem; align-items:center; }
+    .hero-card{ background: linear-gradient(180deg,var(--old-lace), var(--beige)); border:1px solid var(--muted-300); border-radius: var(--radius-xl); padding: 2rem; box-shadow: var(--shadow); }
+    .hero h1{ font-size: clamp(1.8rem, 2.2vw, 2.6rem); margin:.2rem 0 1rem; line-height:1.15; }
+    .hero p{ color: var(--text-500); font-size: 1.1rem; }
+    .hero-visual{ border-radius: var(--radius-xl); height: 320px; background: var(--seashell); border: 1px dashed var(--muted-300); display:grid; place-items:center; color: var(--text-500); font-weight:600; }
+
+    /* Toolbar */
+    .toolbar{ display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; margin: 1.2rem 0 0; }
+    .search{ flex:1; display:flex; align-items:center; gap:.6rem; background: var(--snow); border:1px solid var(--muted-300); padding:.7rem .9rem; border-radius: 12px; box-shadow: var(--shadow); }
+    .search input{ flex:1; border:none; outline:none; background: transparent; font-size: 1rem; }
+    .select{ position:relative; }
+    .select select{ appearance:none; background: var(--snow); border:1px solid var(--muted-300); padding:.7rem .9rem; border-radius: 12px; font-weight:700; }
+
+    /* Categories */
+    .categories{ padding: 1.4rem 0 0.8rem; }
+    .cat-grid{ grid-template-columns: repeat(6, 1fr); }
+    .cat{ background: var(--snow); border:1px solid var(--muted-300); border-radius: 14px; padding: .9rem; display:grid; place-items:start; gap:.4rem; box-shadow: var(--shadow); cursor:pointer; }
+    .cat[aria-selected="true"], .cat:hover{ outline: none; box-shadow: 0 0 0 3px rgba(123,106,88,.18), var(--shadow); }
+
+    /* Products */
+    .products{ padding: 1.2rem 0 3.2rem; }
+    .product-grid{ grid-template-columns: repeat(4, 1fr); }
+    .card{ background: var(--snow); border:1px solid var(--muted-300); border-radius: var(--radius-lg); overflow:hidden; box-shadow: var(--shadow); transition: transform .2s ease; }
+    .card:hover{ transform: translateY(-2px); }
+    .card-img{ aspect-ratio: 4 / 3; background: var(--seashell); border-bottom:1px dashed var(--muted-300); display:grid; place-items:center; color: var(--text-500); font-weight:700; }
+    .card-body{ padding: .9rem; display:grid; gap:.45rem; }
+    .title{ font-weight:800; letter-spacing:.2px; }
+    .meta{ display:flex; flex-wrap:wrap; gap:.4rem .6rem; color: var(--text-500); font-size:.95rem; }
+    .price{ font-weight: 800; }
+
+    /* Sell form modal */
+    dialog{ width:min(720px, 92%); border:none; padding:0; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.25); }
+    dialog::backdrop{ background: rgba(43,42,40,.32); backdrop-filter: blur(2px); }
+    .modal{ background: var(--floral-white); border:1px solid var(--muted-300); border-radius: 18px; padding: 1rem; }
+    .modal header{ position: sticky; top:0; background: transparent; border: none; padding:.6rem 0 1rem; }
+    .form-grid{ grid-template-columns: 1fr 1fr; }
+    .field{ display:grid; gap:.35rem; }
+    .field input, .field select, .field textarea{ width:100%; border:1px solid var(--muted-300); border-radius: 12px; padding:.7rem .9rem; background: var(--snow); font: inherit; }
+    .field textarea{ min-height: 110px; }
+
+    /* Cart drawer */
+    .drawer{ position: fixed; right: 0; top: 0; height: 100dvh; width: min(420px, 92%); background: var(--floral-white); border-left:1px solid var(--muted-300); box-shadow: -10px 0 40px rgba(0,0,0,.08); transform: translateX(105%); transition: transform .25s ease; z-index: 60; display:flex; flex-direction:column; }
+    .drawer.open{ transform: translateX(0); }
+    .drawer header{ padding: 1rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--muted-200); }
+    .drawer .items{ padding: 1rem; display:grid; gap:.8rem; overflow:auto; }
+    .line{ display:grid; grid-template-columns: auto 1fr auto; gap:.8rem; align-items:center; background: var(--snow); border:1px solid var(--muted-300); border-radius: 12px; padding:.6rem; }
+    .thumb{ width: 58px; height: 58px; background: var(--seashell); border:1px dashed var(--muted-300); border-radius: 10px; display:grid; place-items:center; color: var(--text-500); font-size:.8rem; font-weight:700; }
+    .qty{ display:inline-flex; align-items:center; border:1px solid var(--muted-300); border-radius: 12px; overflow:hidden; }
+    .qty button{ all:unset; padding:.3rem .6rem; cursor:pointer; }
+    .drawer footer{ border-top:1px solid var(--muted-200); padding: 1rem; display:grid; gap:.6rem; }
+
+    /* Footer */
+    footer{ background: linear-gradient(180deg, var(--seashell), var(--old-lace)); border-top:1px solid var(--muted-200); padding: 2rem 0; }
+
+    /* Responsive */
+    @media (max-width: 960px){
+      .hero-shell{ grid-template-columns: 1fr; }
+      .cat-grid{ grid-template-columns: repeat(3, 1fr); }
+      .product-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px){
+      nav ul{ display:none; }
+      .cat-grid{ grid-template-columns: repeat(2, 1fr); }
+      .product-grid{ grid-template-columns: 1fr; }
+    }
+
+    /* Delete icon */
+    .delete-icon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: red;
+      background: #fff;
+      border-radius: 50%;
+      padding: 2px 5px;
+      z-index: 10;
+      transition: transform 0.2s;
+    }
+
+    .delete-icon:hover {
+      transform: scale(1.2);
+    }
+
+    .hero-shell {
+      display: flex;           /* row layout */
+      align-items: center;     /* vertically center items */
+      gap: 2rem;               /* space between text & image */
+    }
+
+    .hero-card {
+      flex: 1;                 /* take available space */
+    }
+
+    .hero-visual {
+      flex: 1;                 /* image takes remaining space */
+    }
+
+    .hero-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      border-radius: var(--radius-xl);
+    }
+
+
+  </style>
+</head>
+<body>
+  <!-- Header / Nav -->
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true" title="Campus Cycle">
+          <!-- Minimal cycle icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="5" cy="18" r="3"></circle>
+            <circle cx="19" cy="18" r="3"></circle>
+            <path d="M5 18h8l-4-7h5l5 7"></path>
+          </svg>
+        </div>
+        <span style="font-size:1.2rem">Campus Cycle</span>
+        <span class="chip" title="Student-to-student">S2S</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="home.html">Home</a></li>
+          <li><a href="home.html#categories">Categories</a></li>
+          <li><a href="home.html#chat">Chat</a></li>
+          <li><a href="home.html#ai">AI</a></li>
+          <li><a href="home.html#about">About</a></li>
+          <li><a href="profile.html">Profile</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex; gap:.6rem; align-items:center;">
+        <button class="btn btn-ghost" id="open-sell">Sell an item</button>
+        <button class="btn btn-primary" id="open-cart" aria-label="Open cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h7.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span id="cart-count" class="chip" style="background:var(--beige); color:#000; font-size:16px; padding:4px 8px;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero container" id="shop">
+  <div class="hero-shell">
+    <div class="hero-card">
+      <span class="chip">Welcome!</span>
+      <h1>Buy & sell pre‑loved campus essentials</h1>
+      <p>Campus Cycle is your student marketplace — find affordable <strong>books</strong>, comfy <strong>furniture</strong>, handy <strong>stationary</strong>, kitchen <strong>utensils</strong>, useful <strong>electronics</strong>, and <strong>others</strong>. Keep items in circulation and your budget intact.</p>
+      <div class="toolbar">
+        <div class="search" style="flex:2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="search" type="search" placeholder="Search products, e.g., calculator, chair, dsa book…" />
+        </div>
+        <div class="select">
+          <select id="sort">
+            <option value="featured">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost" id="clear-filters">Clear</button>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <img src="imgs/1.jpg" alt="Hero Image" />
+    </div>
+  </div>
+</section>
+
+  <!-- Categories -->
+  <section class="categories container" id="categories">
+    <h2 style="margin:.2rem 0 1rem">Browse by category</h2>
+    <ul id="category-list"></ul>
+    <div class="grid cat-grid" id="cat-grid">
+      <!-- Categories populated by JS -->
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="products container" aria-live="polite">
+    <div class="grid product-grid" id="product-grid">
+      <!-- Product cards populated by JS -->
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="container" id="about" style="padding-bottom:3rem;">
+  <div class="card" style="display: flex; align-items: center; gap: 2rem;">
+    
+    <!-- Image on the left -->
+    <div class="card-img" style="flex:1;">
+      <img src="imgs/3.jpg" alt="About Visual" style="width:90%; height:70%; object-fit: fill; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.401);" />
+    </div>
+    <!-- Text on the right -->
+    <div class="card-body" style="flex:1.2;">
+      <h2 class="title">What is Campus Cycle?</h2>
+      <p style="font-family: 'Source Sans Pro', sans-serif; font-size:16px; line-height:1.6; color:#333; text-align:left;">
+        Campus Cycle is a student-only marketplace built exclusively for our campus community. It connects students who want to sell their pre-loved essentials with those who need them — all within the safety and trust of the campus. From books and electronics to furniture and daily-use items, everything here is designed to make student life easier, more affordable, and sustainable. No outsiders, no hassle — just students helping students♻️
+      </p>
+      <div style="display:flex; gap:.6rem; flex-wrap:wrap;">
+        <span class="chip">No middlemen</span>
+        <span class="chip">Budget friendly</span>
+        <span class="chip">Sustainable</span>
+        <span class="chip">Peer‑to‑peer</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="display:grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 1.4rem;">
+      <div>
+        <div class="brand" style="margin-bottom:.6rem;">
+          <div class="brand-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="3"></circle><circle cx="19" cy="18" r="3"></circle><path d="M5 18h8l-4-7h5l5 7"></path></svg></div>
+          <strong>Campus Cycle</strong>
+        </div>
+        <p style="color:var(--text-500); max-width:48ch">Campus Cycle keeps campus resources moving — buy, sell, and reuse essentials right where you study. Built by students, for students.</p>
+      </div>
+      <div>
+        <h4>Categories</h4>
+        <ul style="list-style:none; padding:0; margin: .6rem 0; display:grid; gap:.3rem;">
+          <li>All</li>
+          <li>Books</li>
+          <li>Furniture</li>
+          <li>Stationary</li>
+          <li>Utensils</li>
+          <li>Electronics</li>
+          <li>Others</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Get started</h4>
+        <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.6rem;">
+          <button class="btn btn-primary" id="footer-sell">Sell an item</button>
+          <button class="btn btn-ghost" id="footer-cart">Buy an item</button>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="margin-top:1rem; color:var(--text-500); font-size:.95rem;">© <span id="year"></span> Campus Cycle • Crafted for students</div>
+  </footer>
+
+  <!-- Sell Modal -->
+    <dialog id="sell-modal">
+    <div class="modal">
+        <header class="container" style="display:flex; align-items:center; justify-content:space-between;">
+        <h3 class="title" id="sell">List your product</h3>
+        <button class="btn btn-ghost" id="close-sell">Close</button>
+        </header>
+        <div class="container" style="padding-bottom:1rem;">
+        <form id="sell-form">
+            <div class="grid form-grid">
+            <div class="field">
+                <label>Title *</label>
+                <input name="title" required placeholder="eg. DSA Textbook (2nd ed.)" />
+            </div>
+            <div class="field">
+                <label>Category *</label>
+                <select name="category" required>
+                <option value="all" style="font-weight: 700;">All</option>
+                <option value="books">Books</option>
+                <option value="furniture">Furniture</option>
+                <option value="stationary">Stationary</option>
+                <option value="utensils">Utensils</option>
+                <option value="electronics">Electronics</option>
+                <option value="others">Others</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Price (₹) *</label>
+                <input name="price" type="number" min="0" step="1" required placeholder="eg. 499" />
+            </div>
+            <div class="field">
+                <label>Quantity *</label>
+                <input name="quantity" type="number" min="1" step="1" required value="1" />
+            </div>
+            <div class="field">
+                <label>Colour</label>
+                <input name="colour" placeholder="eg. Black" />
+            </div>
+            <div class="field">
+                <label>Quality *</label>
+                <select name="quality" required>
+                <option>Like New</option>
+                <option>Very Good</option>
+                <option>Good</option>
+                <option>Fair</option>
+                <option>Used</option>
+                </select>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+                <label>How old is it? *</label>
+                <input name="age" required placeholder="eg. 6 months" />
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+                <label>Description</label>
+                <textarea name="description" placeholder="Add useful details like condition, accessories included, pickup location on campus etc."></textarea>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+                <label>Image / Video URL</label>
+                <input name="media" placeholder="Paste image or video link" />
+            </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:.6rem; margin-top:1rem;">
+            <button type="button" class="btn btn-ghost" id="reset-form">Reset</button>
+            <button class="btn btn-primary" type="submit">Add to marketplace</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </dialog>
+
+    <!-- Link to JS -->
+    <script src="app.js"></script>
+
+
+  <!-- Cart Drawer -->
+  <aside class="drawer" id="cart-drawer" aria-label="Shopping cart">
+    <header>
+      <strong>Cart</strong>
+      <button class="btn btn-ghost" id="close-cart">Close</button>
+    </header>
+    <div class="items" id="cart-items"></div>
+    <footer>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <strong>Total</strong>
+        <strong>₹ <span id="cart-total">0</span></strong>
+      </div>
+      <button class="btn btn-primary" id="checkout">Checkout</button>
+    </footer>
+  </aside>
+
+  <script>
+    /* ================================
+       Data (starter catalog)
+       ================================ */
+    const CATEGORIES = [
+      { key: 'books', label: 'Books' },
+      { key: 'furniture', label: 'Furniture' },
+      { key: 'stationary', label: 'Stationary' },
+      { key: 'utensils', label: 'Utensils' },
+      { key: 'electronics', label: 'Electronics' },
+      { key: 'others', label: 'Others' },
+    ];
+
+    const initialProducts = [
+  { id: 'p1', title: 'DSA Textbook (2nd ed.)', category: 'books', price: 399, quantity: 1, media: 'imgs/DSA%20txtbk.jpg', description: 'Highlights on key chapters. No torn pages.' },
+  { id: 'p2', title: 'Hostel Study Table', category: 'furniture', price: 1200, quantity: 1, media: 'imgs/hostel%20study%20table.jpg', description: 'Compact, sturdy. Minor scuffs at edges.' },
+  { id: 'p3', title: 'Scientific Calculator FX-991ES', category: 'electronics', price: 750, quantity: 1, media: 'imgs/scientific%20calc.jpg', description: 'Barely used. Includes cover.' },
+  { id: 'p4', title: 'Ballpoint Pens (Pack of 10)', category: 'stationary', price: 60, quantity: 10, media: 'imgs/blue%20ballpen%20%28pack%2010%29.jpg', description: 'Smooth writing pens.' },
+  { id: 'p5', title: 'Non-stick Frying Pan', category: 'utensils', price: 300, quantity: 1, media: 'imgs/non%20stick%20frying%20pan.jpeg', description: 'Great for hostel cooking.' },
+  { id: 'p6', title: 'LED Desk Lamp', category: 'electronics', price: 499, quantity: 1, media: 'imgs/table%20lamp.jpg', description: 'Three brightness modes.' },
+  { id: 'p7', title: 'Bean Bag Chair', category: 'furniture', price: 900, quantity: 1, media: 'imgs/bean%20bag.jpg', description: 'Comfy reading chair.' },
+  { id: 'p8', title: 'Lab Coat', category: 'others', price: 250, quantity: 1, media: 'imgs/lab%20coat.jpeg', description: 'Size M. Clean.' },
+];
+
+
+    /* ================================
+       State
+       ================================ */
+    const state = {
+      products: JSON.parse(localStorage.getItem('cc_products') || 'null') || initialProducts,
+      cart: JSON.parse(localStorage.getItem('cc_cart') || '[]'),
+      selectedCategory: null,
+      search: '',
+      sort: 'featured',
+    };
+
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+
+    function save(){
+      localStorage.setItem('cc_products', JSON.stringify(state.products));
+      localStorage.setItem('cc_cart', JSON.stringify(state.cart));
+    }
+
+    /* ================================
+       Rendering
+       ================================ */
+    function renderCategories(){
+      const wrap = $('#cat-grid');
+      wrap.innerHTML = '';
+      const all = document.createElement('button');
+      all.className = 'cat';
+      all.setAttribute('aria-selected', state.selectedCategory === null);
+      all.textContent = 'All';
+      all.onclick = () => { state.selectedCategory = null; renderAll(); };
+      wrap.appendChild(all);
+
+      for (const c of CATEGORIES){
+        const btn = document.createElement('button');
+        btn.className = 'cat';
+        btn.setAttribute('aria-selected', state.selectedCategory === c.key);
+        btn.innerHTML = `<strong>${c.label}</strong><span style="color:var(--text-500); font-size:.95rem">Shop now</span>`;
+        btn.onclick = () => { state.selectedCategory = c.key; renderAll(); };
+        wrap.appendChild(btn);
+      }
+    }
+
+    function productCard(p){
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-img">
+        <img src="${p.media}" alt="${p.title}" />
+      </div>
+      <div class="card-body">
+        <div class="title">${p.title}</div>
+        <div class="meta">
+          <span class="chip">₹ ${p.price}</span>
+          <span>• ${p.quality}</span>
+          <span>• ${p.age}</span>
+        </div>
+        <div class="meta">
+          <span>Colour: <strong>${p.colour || '—'}</strong></span>
+          <span>Qty: <strong>${p.quantity}</strong></span>
+        </div>
+        <p style="color:var(--text-500)">${p.description || ''}</p>
+        <div style="display:flex; gap:.6rem; margin-top:.4rem;">
+          <button class="btn btn-ghost" aria-label="View details">Details</button>
+          <button class="btn btn-primary" aria-label="Add to cart">Add to cart</button>
+        </div>
+      </div>`;
+    
+    const [detailsBtn, addBtn] = card.querySelectorAll('button');
+    detailsBtn.onclick = () => openDetails(p);
+    addBtn.onclick = () => addToCart(p.id);
+    return card;
+  }
+
+
+    function renderProducts(){
+      const grid = $('#product-grid');
+      grid.innerHTML = '';
+
+      let list = [...state.products];
+      // filter by category
+      if (state.selectedCategory){ list = list.filter(p => p.category === state.selectedCategory); }
+      // filter by search
+      if (state.search.trim()){
+        const q = state.search.toLowerCase();
+        list = list.filter(p => Object.values(p).join(' ').toLowerCase().includes(q));
+      }
+      // sorting
+      if (state.sort === 'price-asc') list.sort((a,b)=>a.price-b.price);
+      if (state.sort === 'price-desc') list.sort((a,b)=>b.price-a.price);
+      if (state.sort === 'newest') list.sort((a,b)=> (b._created || 0) - (a._created || 0));
+      if (state.sort === 'oldest') list.sort((a,b)=> (a._created || 0) - (b._created || 0));
+
+      if (!list.length){
+        grid.innerHTML = `<div class="card" style="grid-column:1/-1; padding:1rem;">No products match your filters.</div>`;
+        return;
+      }
+
+      for (const p of list){ grid.appendChild(productCard(p)); }
+    }
+
+      function renderCart() {
+  const container = $('#cart-items');
+  const totalEl = $('#cart-total');
+  const countEl = $('#cart-count');
+  container.innerHTML = '';
+  let total = 0;
+  let count = 0;
+
+  for (const line of state.cart) {
+    const p = state.products.find(x => x.id === line.id);
+    if (!p) continue;
+
+    total += p.price * line.qty;
+    count += line.qty;
+
+    const row = document.createElement('div');
+    row.className = 'line';
+    row.style.display = "flex";
+    row.style.gap = "0.5rem";
+    row.style.alignItems = "center";
+
+    row.innerHTML = `
+      <div class="thumb" style="width:58px; height:58px; flex-shrink:0;">
+        <img src="${p.media}" alt="${p.title}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+      </div>
+      <div style="flex-grow:1">
+        <div><strong>${p.title}</strong></div>
+        <div style="font-size:.9rem; color:var(--text-500)">₹${p.price} × ${line.qty}</div>
+      </div>
+      <div class="qty" style="display:flex; align-items:center; gap:0.3rem">
+        <button aria-label="Decrease">-</button>
+        <span style="padding:.3rem .6rem">${line.qty}</span>
+        <button aria-label="Increase">+</button>
+      </div>
+    `;
+
+    const [decBtn, , incBtn] = row.querySelectorAll('button');
+    decBtn.onclick = () => updateQty(p.id, line.qty - 1);
+    incBtn.onclick = () => updateQty(p.id, line.qty + 1);
+
+    container.appendChild(row);
+  }
+
+  totalEl.textContent = total;
+  if (countEl) countEl.textContent = count; // optional if you have a cart count element
+}
+
+
+    function renderAll(){
+      renderCategories();
+      renderProducts();
+      renderCart();
+    }
+
+    function updateQty(id, qty){
+      if (qty <= 0){
+        state.cart = state.cart.filter(l => l.id !== id);
+      } else {
+        const line = state.cart.find(l => l.id === id);
+        if (line) line.qty = qty;
+      }
+      save();
+      renderCart();
+  }
+
+
+    /* ================================
+       Details (simple alert for demo)
+       ================================ */
+    function openDetails(p){
+      alert(`${p.title}\n\nPrice: ₹ ${p.price}\nQuality: ${p.quality}\nAge: ${p.age}\nColour: ${p.colour}\nQuantity: ${p.quantity}\n\nDescription: ${p.description || '—'}`);
+    }
+
+    /* ================================
+       Cart actions
+       ================================ */
+    function addToCart(id){
+      const line = state.cart.find(x => x.id === id);
+      if (line) line.qty++; else state.cart.push({ id, qty: 1 });
+      save();
+      renderCart();
+    }
+    function changeQty(id, delta){
+      const line = state.cart.find(x => x.id === id);
+      if (!line) return;
+      line.qty += delta;
+      if (line.qty <= 0) state.cart = state.cart.filter(x => x.id !== id);
+      save();
+      renderCart();
+    }
+
+    /* ================================
+       Sell form handling
+       ================================ */
+    const sellModal = $('#sell-modal');
+    $('#open-sell').onclick = () => sellModal.showModal();
+    $('#footer-sell').onclick = () => sellModal.showModal();
+    $('#close-sell').onclick = () => sellModal.close();
+    $('#reset-form').onclick = () => $('#sell-form').reset();
+
+    $('#sell-form').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const product = {
+        id: 'p' + Math.random().toString(36).slice(2,8),
+        _created: Date.now(),
+        title: fd.get('title').toString().trim(),
+        category: fd.get('category'),
+        price: Number(fd.get('price')),
+        quantity: Number(fd.get('quantity')),
+        colour: fd.get('colour').toString().trim() || '—',
+        quality: fd.get('quality'),
+        age: fd.get('age').toString().trim(),
+        media: fd.get('media').toString().trim() || '#',
+        description: fd.get('description').toString().trim(),
+      };
+      state.products.unshift(product);
+      save();
+      sellModal.close();
+      e.target.reset();
+      state.selectedCategory = null;
+      state.search = '';
+      state.sort = 'featured';
+      renderAll();
+    });
+
+    /* ================================
+       Drawer / Misc UI
+       ================================ */
+    const drawer = $('#cart-drawer');
+    $('#open-cart').onclick = () => { drawer.classList.add('open'); };
+    $('#footer-cart').onclick = () => { drawer.classList.add('open'); };
+    $('#close-cart').onclick = () => { drawer.classList.remove('open'); };
+    $('#checkout').onclick = () => {
+      if (!state.cart.length) return alert('Your cart is empty.');
+      alert('Checkout complete! (demo)');
+      state.cart = [];
+      save();
+      renderCart();
+      drawer.classList.remove('open');
+    };
+
+    $('#search').addEventListener('input', (e)=>{ state.search = e.target.value; renderProducts(); });
+    $('#sort').addEventListener('change', (e)=>{ state.sort = e.target.value; renderProducts(); });
+    $('#clear-filters').onclick = () => { state.search=''; $('#search').value=''; state.selectedCategory=null; $('#sort').value='featured'; state.sort='featured'; renderAll(); };
+
+    // Footer year
+    $('#year').textContent = new Date().getFullYear();
+
+    // Initial paint
+    renderAll();
+  </script>
+</body>
+</html>

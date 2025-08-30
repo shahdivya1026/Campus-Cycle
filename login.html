@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Campus Portal</title>
+  <link rel="stylesheet" href="style.css"> <!-- use your existing theme css -->
+</head>
+<body>
+  <header>
+    <h1>Campus Login</h1>
+  </header>
+
+  <main class="container">
+    <form id="login-form">
+      <label>Name</label>
+      <input type="text" id="name" required>
+
+      <label>Moodle ID</label>
+      <input type="number" id="moodleId" required>
+
+      <label>College Email</label>
+      <input type="email" id="email" required>
+
+      <label>Phone No</label>
+      <input type="tel" id="phone" required>
+
+      <label>Profile Picture (optional)</label>
+      <input type="file" id="profilePic" accept="image/*">
+
+      <button type="submit">Login</button>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const moodleId = document.getElementById("moodleId").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const pic = document.getElementById("profilePic").files[0];
+
+      // Store in localStorage for profile page
+      localStorage.setItem("user", JSON.stringify({
+        name, moodleId, email, phone,
+        pic: pic ? URL.createObjectURL(pic) : null
+      }));
+
+      // redirect to profile page
+      window.location.href = "profile.html";
+    });
+  </script>
+</body>
+</html>
