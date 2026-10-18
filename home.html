@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Campus Cycle — Student Marketplace</title>
+  <meta name="description" content="Campus Cycle: a student-to-student marketplace for books, furniture, stationary, utensils, electronics, and more." />
+
+  <!-- Google Font: Source Sans Pro (aka Sans Pro) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Warm neutral palette as requested */
+      --snow: #FFFAFA;
+      --floral-white: #FFFAF0;
+      --seashell: #FFF5EE;
+      --old-lace: #FDF5E6;
+      --beige: #F5F5DC;
+      /* "blane" wasn't clear; assuming BlanchedAlmond */
+      --blanched-almond: #FFEBCD;
+
+      --text-900: #2b2a28;
+      --text-700: #3f3e3b;
+      --text-500: #6d6a64;
+      --muted-300: #d8d5cc;
+      --muted-200: #e9e6de;
+      --accent: #7b6a58; /* soft mocha accent for CTAs */
+      --accent-contrast: #fffefc;
+      --ok: #2e7d32;
+      --warn: #b36b00;
+      --err: #b00020;
+      --shadow: 0 10px 30px rgba(43,42,40,.08), 0 2px 8px rgba(43,42,40,.06);
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --ring: 0 0 0 3px rgba(123,106,88,.18);
+    }
+
+    html, body{
+      font-family: 'Source Sans Pro', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text-900);
+      background: linear-gradient(180deg,var(--snow), var(--floral-white) 30%, var(--seashell));
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* Utility */
+    .container{ width: min(1120px, 92%); margin-inline: auto; }
+    .grid{ display:grid; gap: 1.2rem; }
+    .btn{ display:inline-flex; align-items:center; gap:.5rem; font-weight:700; padding:.9rem 1.1rem; border-radius: var(--radius-lg); border:1px solid transparent; cursor:pointer; transition: all .2s ease; box-shadow: var(--shadow); }
+    .btn-ghost{ background: transparent; border-color: var(--muted-300); box-shadow:none; }
+    .btn-ghost:hover{ background: var(--old-lace); }
+    .btn-primary{ background: var(--accent); color: var(--accent-contrast); }
+    .btn-primary:hover{ transform: translateY(-1px); box-shadow: 0 14px 28px rgba(123,106,88,.2); }
+    .chip{ display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .7rem; border-radius:999px; background: var(--old-lace); border:1px solid var(--muted-300); font-weight:600; }
+
+    /* Header */
+    header{ position: sticky; top: 0; background: linear-gradient(180deg,var(--floral-white), var(--seashell)); border-bottom:1px solid var(--muted-200); z-index: 40; backdrop-filter: blur(8px); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; padding: .9rem 0; }
+    .brand{ display:flex; align-items:center; gap:.8rem; font-weight: 800; letter-spacing:.4px; }
+    .brand-logo{ width: 38px; height: 38px; background: var(--blanched-almond); border-radius: 10px; display:grid; place-items:center; box-shadow: var(--shadow); }
+    .brand-logo svg{ width:22px; height:22px; }
+    nav ul{ display:flex; gap: 1rem; align-items:center; }
+    nav a{ text-decoration:none; color: var(--text-700); font-weight:700; padding:.6rem .8rem; border-radius: 10px; }
+    nav a:hover{ background: var(--old-lace); }
+
+    /* Hero */
+    .hero{ position:relative; padding: 3.4rem 0 2.2rem; }
+    .hero-shell{ display:grid; grid-template-columns: 1.2fr .8fr; gap: 2rem; align-items:center; }
+    .hero-card{ background: linear-gradient(180deg,var(--old-lace), var(--beige)); border:1px solid var(--muted-300); border-radius: var(--radius-xl); padding: 2rem; box-shadow: var(--shadow); }
+    .hero h1{ font-size: clamp(1.8rem, 2.2vw, 2.6rem); margin:.2rem 0 1rem; line-height:1.15; }
+    .hero p{ color: var(--text-500); font-size: 1.1rem; }
+    .hero-visual{ border-radius: var(--radius-xl); height: 320px; background: var(--seashell); border: 1px dashed var(--muted-300); display:grid; place-items:center; color: var(--text-500); font-weight:600; }
+
+    /* Toolbar */
+    .toolbar{ display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; margin: 1.2rem 0 0; }
+    .search{ flex:1; display:flex; align-items:center; gap:.6rem; background: var(--snow); border:1px solid var(--muted-300); padding:.7rem .9rem; border-radius: 12px; box-shadow: var(--shadow); }
+    .search input{ flex:1; border:none; outline:none; background: transparent; font-size: 1rem; }
+    .select{ position:relative; }
+    .select select{ appearance:none; background: var(--snow); border:1px solid var(--muted-300); padding:.7rem .9rem; border-radius: 12px; font-weight:700; }
+
+    /* Categories */
+    .categories{ padding: 1.4rem 0 0.8rem; }
+    .cat-grid{ grid-template-columns: repeat(6, 1fr); }
+    .cat{ background: var(--snow); border:1px solid var(--muted-300); border-radius: 14px; padding: .9rem; display:grid; place-items:start; gap:.4rem; box-shadow: var(--shadow); cursor:pointer; }
+    .cat[aria-selected="true"], .cat:hover{ outline: none; box-shadow: 0 0 0 3px rgba(123,106,88,.18), var(--shadow); }
+
+    /* Products */
+    .products{ padding: 1.2rem 0 3.2rem; }
+    .product-grid{ grid-template-columns: repeat(4, 1fr); }
+    .card{ background: var(--snow); border:1px solid var(--muted-300); border-radius: var(--radius-lg); overflow:hidden; box-shadow: var(--shadow); transition: transform .2s ease; }
+  .card{ background: var(--snow); border:1px solid var(--muted-300); border-radius: var(--radius-lg); overflow:hidden; box-shadow: var(--shadow); transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s; transform-style: preserve-3d; }
+  .card:hover{ transform: translateY(-8px) rotateX(1deg); box-shadow: 0 22px 48px rgba(43,42,40,.12); }
+    .card-img{ aspect-ratio: 4 / 3; background: var(--seashell); border-bottom:1px dashed var(--muted-300); display:grid; place-items:center; color: var(--text-500); font-weight:700; }
+  .card-img{ position:relative; min-height:180px; overflow:hidden; }
+  .card-body{ padding: .9rem; display:grid; gap:.45rem; }
+    .card-body{ padding: .9rem; display:grid; gap:.45rem; }
+    .title{ font-weight:800; letter-spacing:.2px; }
+  .title{ font-weight:800; letter-spacing:.2px; line-height:1.15; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
+    .meta{ display:flex; flex-wrap:wrap; gap:.4rem .6rem; color: var(--text-500); font-size:.95rem; }
+    .price{ font-weight: 800; }
+
+    /* Sell form modal */
+    dialog{ width:min(720px, 92%); border:none; padding:0; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.25); }
+    dialog::backdrop{ background: rgba(43,42,40,.32); backdrop-filter: blur(2px); }
+    .modal{ background: var(--floral-white); border:1px solid var(--muted-300); border-radius: 18px; padding: 1rem; }
+    .modal header{ position: sticky; top:0; background: transparent; border: none; padding:.6rem 0 1rem; }
+    .form-grid{ grid-template-columns: 1fr 1fr; }
+    .field{ display:grid; gap:.35rem; }
+    .field input, .field select, .field textarea{ width:100%; border:1px solid var(--muted-300); border-radius: 12px; padding:.7rem .9rem; background: var(--snow); font: inherit; }
+    .field textarea{ min-height: 110px; }
+
+    /* Cart drawer */
+    .drawer{ position: fixed; right: 0; top: 0; height: 100dvh; width: min(420px, 92%); background: var(--floral-white); border-left:1px solid var(--muted-300); box-shadow: -10px 0 40px rgba(0,0,0,.08); transform: translateX(105%); transition: transform .25s ease; z-index: 60; display:flex; flex-direction:column; }
+    .drawer.open{ transform: translateX(0); }
+    .drawer header{ padding: 1rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--muted-200); }
+    .drawer .items{ padding: 1rem; display:grid; gap:.8rem; overflow:auto; }
+    .line{ display:grid; grid-template-columns: auto 1fr auto; gap:.8rem; align-items:center; background: var(--snow); border:1px solid var(--muted-300); border-radius: 12px; padding:.6rem; }
+    .thumb{ width: 58px; height: 58px; background: var(--seashell); border:1px dashed var(--muted-300); border-radius: 10px; display:grid; place-items:center; color: var(--text-500); font-size:.8rem; font-weight:700; }
+    .qty{ display:inline-flex; align-items:center; border:1px solid var(--muted-300); border-radius: 12px; overflow:hidden; }
+    .qty button{ all:unset; padding:.3rem .6rem; cursor:pointer; }
+    .drawer footer{ border-top:1px solid var(--muted-200); padding: 1rem; display:grid; gap:.6rem; }
+
+    /* Footer */
+    footer{ background: linear-gradient(180deg, var(--seashell), var(--old-lace)); border-top:1px solid var(--muted-200); padding: 2rem 0; }
+
+    /* Responsive */
+    @media (max-width: 960px){
+      .hero-shell{ grid-template-columns: 1fr; }
+      .cat-grid{ grid-template-columns: repeat(3, 1fr); }
+      .product-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px){
+      nav ul{ display:none; }
+      .cat-grid{ grid-template-columns: repeat(2, 1fr); }
+      .product-grid{ grid-template-columns: 1fr; }
+    }
+
+    /* Delete icon */
+    .delete-icon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: red;
+      background: #fff;
+      border-radius: 50%;
+      padding: 2px 5px;
+      z-index: 10;
+      transition: transform 0.2s;
+    }
+
+    .delete-icon:hover {
+      transform: scale(1.2);
+    }
+
+    /* Ensure product and hero images fit their containers and don't overflow */
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-visual img {
+      width: 100%;
+      height: 95%;
+      object-fit: fill;
+      border-radius: var(--radius-xl);
+      display: block;
+    }
+
+  /* Chatbot button */
+  #chatbot-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #f5f5dc;
+    color: #4b3e2b;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+
+  /* Chatbot window */
+  #chatbot-container {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 320px;
+    max-height: 450px;
+    background: #fff8dc;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+    z-index: 1000;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+  }
+
+  #chatbot-header {
+    background: #f5f5dc;
+    color: #4b3e2b;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    position: relative;
+  }
+
+  #chatbot-header button {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #4b3e2b;
+  }
+
+  #chatbot-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bot-message {
+    background: #fff5e1;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+    width: fit-content;
+    max-width: 80%;
+  }
+
+  .user-message {
+    background: #dcd0b0;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+    align-self: flex-end;
+    width: fit-content;
+    max-width: 80%;
+  }
+
+  #chatbot-input {
+    display: flex;
+    border-top: 1px solid #ccc;
+  }
+
+  #chatbot-input input {
+    flex: 1;
+    border: none;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  #chatbot-input button {
+    background: #f5f5dc;
+    color: #4b3e2b;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .quick-reply {
+    background: #f0e4c2;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 3px 3px 0 0;
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  .quick-replies-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 5px;
+  }
+
+  .typing {
+    font-style: italic;
+    font-size: 12px;
+    color: #4b3e2b;
+  }
+  </style>
+</head>
+<body>
+
+<button id="chatbot-btn">💬</button>
+
+<div id="chatbot-container">
+  <div id="chatbot-header">
+    CampusCycle Bot 🤖
+    <button id="chatbot-close">✖</button>
+  </div>
+  <div id="chatbot-messages"></div>
+  <div id="chatbot-input">
+    <input type="text" id="chatbot-text" placeholder="Type your message..." />
+    <button id="chatbot-send">Send</button>
+  </div>
+</div>
+
+<script>
+  const chatbotBtn = document.getElementById('chatbot-btn');
+  const chatbotContainer = document.getElementById('chatbot-container');
+  const chatbotMessages = document.getElementById('chatbot-messages');
+  const chatbotText = document.getElementById('chatbot-text');
+  const chatbotSend = document.getElementById('chatbot-send');
+  const chatbotClose = document.getElementById('chatbot-close');
+
+  // Toggle chatbot open/close
+  chatbotBtn.addEventListener('click', () => {
+    chatbotContainer.style.display = chatbotContainer.style.display === 'none' ? 'flex' : 'none';
+  });
+  chatbotClose.addEventListener('click', () => chatbotContainer.style.display = 'none');
+
+  // Send message
+  chatbotSend.addEventListener('click', sendMessage);
+  chatbotText.addEventListener('keypress', e => { if(e.key==='Enter') sendMessage(); });
+
+  function addMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = sender==='bot'?'bot-message':'user-message';
+    msgDiv.innerHTML = text;
+    chatbotMessages.appendChild(msgDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+  }
+
+  function botReply(msg) {
+    const typing = document.createElement('div');
+    typing.className='typing';
+    typing.innerText='CycleBot is typing...';
+    chatbotMessages.appendChild(typing);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+    setTimeout(() => {
+      typing.remove();
+      let reply = "I'm not sure I understood. Can you try again? 🤔";
+
+      if(msg.includes('hello')||msg.includes('hi'))
+      {
+        reply = "👋 Hello! I'm CycleBot. How can I help you?<br>";
+        addMessage(reply,'bot');
+
+        const quickReplies = document.createElement('div');
+        quickReplies.className='quick-replies-container';
+
+        const options = ['Buy','Sell','PG','Help'];
+        options.forEach(opt=>{
+          const btn = document.createElement('button');
+          btn.className='quick-reply';
+          btn.innerText=opt;
+          btn.onclick=()=>{ sendQuick(opt.toLowerCase()) };
+          quickReplies.appendChild(btn);
+        });
+
+        chatbotMessages.appendChild(quickReplies);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        return;
+      }
+
+      else if(msg.includes('buy')) reply = "🛒 You can browse second-hand items here 👉 <a href='home.html#categories'>Buy Page</a>";
+      else if(msg.includes('sell')) reply = "📦 To sell your item, go to 👉 <a href='home.html#sell-modal'>Sell Page</a>";
+      else if(msg.includes('pg')||msg.includes('hostel')) reply = "🏠 Looking for PG? Check our listings 👉 <a href='pg.html'>PG Page</a>";
+      else if(msg.includes('help')||msg.includes('faq')) reply = "I can help you with:<br>✅ Buying items<br>✅ Selling items<br>✅ Finding PGs<br>✅ FAQs";
+
+      addMessage(reply,'bot');
+    },1000);
+  }
+
+  function sendMessage() {
+    const userMsg = chatbotText.value.trim();
+    if(!userMsg) return;
+    addMessage(userMsg,'user');
+    chatbotText.value='';
+    botReply(userMsg.toLowerCase());
+  }
+
+  function sendQuick(msg){
+    addMessage(msg,'user');
+    botReply(msg);
+  }
+
+  // Auto greeting
+  window.onload = ()=>{ 
+    setTimeout(()=>{ addMessage("👋 Hi! I'm CycleBot. How can I assist you today?",'bot'); },1000); 
+  };
+</script>
+
+  <!-- Header / Nav -->
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true" title="Campus Cycle">
+          <!-- Minimal cycle icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="5" cy="18" r="3"></circle>
+            <circle cx="19" cy="18" r="3"></circle>
+            <path d="M5 18h8l-4-7h5l5 7"></path>
+          </svg>
+        </div>
+        <span style="font-size:1.2rem">Campus Cycle</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="home.html">Home</a></li>
+          <li><a href="home.html#categories">Categories</a></li>
+          <li><a href="map.html">Map</a></li>
+          <li><a href="home.html#about">About</a></li>
+          <li><a href="profile.html">Profile</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex; gap:.6rem; align-items:center;">
+        <button class="btn btn-ghost" id="open-sell">Sell an item</button>
+        <button class="btn btn-primary" id="open-cart" aria-label="Open cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h7.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span id="cart-count" class="chip" style="background:var(--beige); color:#000; font-size:16px; padding:4px 8px;">0</span>
+        </button>
+        <div id="user-info" class="user-info" style="display:none;">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <span id="user-name">User</span>
+          <button class="btn btn-ghost" id="logout-btn" style="padding: 0.4rem 0.8rem;">Logout</button>
+        </div>
+        <div id="auth-buttons" style="display:flex; gap:.6rem;">
+          <a class="btn btn-ghost" href="home-test.html?auth=login">Login</a>
+          <a class="btn btn-primary" href="home-test.html?auth=signup">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero container" id="shop">
+  <div class="hero-shell">
+    <div class="hero-card">
+      <span class="chip">Welcome!</span>
+      <h1>Buy & sell pre‑loved campus essentials</h1>
+      <p>Campus Cycle is your student marketplace — find affordable <strong>books</strong>, comfy <strong>furniture</strong>, handy <strong>stationary</strong>, kitchen <strong>utensils</strong>, useful <strong>electronics</strong>, and <strong>others</strong>. Keep items in circulation and your budget intact.</p>
+      <div class="toolbar">
+        <div class="search" style="flex:2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="search" type="search" placeholder="Search products, e.g., calculator, chair, dsa book…" />
+        </div>
+        <div class="select">
+          <select id="sort">
+            <option value="featured">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost" id="clear-filters">Clear</button>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <img src="imgs/1.jpg"/>
+    </div>
+  </div>
+</section>
+
+  <!-- Categories -->
+  <section class="categories container" id="categories">
+    <h2 style="margin:.2rem 0 1rem">Browse by category</h2>
+    <ul id="category-list"></ul>
+    <div class="grid cat-grid" id="cat-grid">
+      <!-- Categories populated by JS -->
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="products container" aria-live="polite">
+    <div class="grid product-grid" id="product-grid">
+      <!-- Product cards populated by JS -->
+    </div>
+  </section>
+
+    <script>
+        // Sample products array
+        const products = [
+            { name: "Shoes", price: 500 },
+            { name: "Writing Pad", price: 40 },
+            { name: "Pouch", price: 100 },
+            { name: "Calculator", price: 750 },
+            { name: "Pen Set", price: 60 }
+        ];
+
+        const productsDiv = document.getElementById("products");
+        const cartDiv = document.getElementById("cart");
+        const totalDiv = document.getElementById("total");
+        let cart = [];
+
+        // Create product cards
+        products.forEach(product => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.dataset.id = product.name;
+            card.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>₹${product.price}</p>
+                <button>Add to Cart</button>
+            `;
+            productsDiv.appendChild(card);
+
+            // Add to Cart button click
+            card.querySelector("button").addEventListener("click", () => {
+                addToCart(product);
+            });
+        });
+
+        // Add product to cart
+        function addToCart(product) {
+            const existing = cart.find(item => item.name === product.name);
+            if(existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            renderCart();
+        }
+
+        // Render cart panel
+        function renderCart() {
+            cartDiv.innerHTML = "";
+            let total = 0;
+            cart.forEach(item => {
+                const cartItem = document.createElement("div");
+                cartItem.className = "cart-item";
+                cartItem.innerHTML = `
+                    <h4>${item.name}</h4>
+                    <p>₹${item.price} x ${item.quantity}</p>
+                `;
+                cartDiv.appendChild(cartItem);
+                total += item.price * item.quantity;
+            });
+            totalDiv.textContent = `Total: ₹${total}`;
+        }
+    </script>
+
+  <!-- About -->
+  <section class="container" id="about" style="padding-bottom:3rem;">
+  <div class="card" style="display: flex; align-items: center; gap: 2rem;">
+  
+  <!-- Image on the left -->
+  <div class="card-img" style="flex:1; display:flex; justify-content:center;">
+    <img src="imgs/2.jpg" 
+         alt="About Visual" 
+         style="width:100%; max-width:450px; height:90%; object-fit:fill; border-radius: var(--radius-xl);" />
+  </div>
+
+  <!-- Text on the right -->
+  <div class="card-body" style="flex:1.2;">
+    <h2 class="title">What is Campus Cycle?</h2>
+    <p style="font-family: 'Source Sans Pro', sans-serif; font-size:16px; line-height:1.6; color:#333; text-align:left;">
+      Campus Cycle is a student-only marketplace built exclusively for our campus community. It connects students who want to sell their pre-loved essentials with those who need them — all within the safety and trust of the campus. From books and electronics to furniture and daily-use items, everything here is designed to make student life easier, more affordable, and sustainable. No outsiders, no hassle — just students helping students♻️
+    </p>
+    <div style="display:flex; gap:.6rem; flex-wrap:wrap;">
+      <span class="chip">No middlemen</span>
+      <span class="chip">Budget friendly</span>
+      <span class="chip">Sustainable</span>
+      <span class="chip">Peer-to-peer</span>
+    </div>
+  </div>
+
+</div>
+
+</section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="display:grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 1.4rem;">
+      <div>
+        <div class="brand" style="margin-bottom:.6rem;">
+          <div class="brand-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="3"></circle><circle cx="19" cy="18" r="3"></circle><path d="M5 18h8l-4-7h5l5 7"></path></svg></div>
+          <strong>Campus Cycle</strong>
+        </div>
+        <p style="color:var(--text-500); max-width:48ch">Campus Cycle keeps campus resources moving — buy, sell, and reuse essentials right where you study. Built by students, for students.</p>
+      </div>
+      <div>
+        <h4>Categories</h4>
+        <ul style="list-style:none; padding:0; margin: .6rem 0; display:grid; gap:.3rem;">
+          <li>All</li>
+          <li>Books</li>
+          <li>Furniture</li>
+          <li>Stationary</li>
+          <li>Utensils</li>
+          <li>Electronics</li>
+          <li>Others</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Get started</h4>
+        <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.6rem;">
+          <button class="btn btn-primary" id="footer-sell">Sell an item</button>
+          <button class="btn btn-ghost" id="footer-cart">Buy an item</button>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="margin-top:1rem; color:var(--text-500); font-size:.95rem;">© <span id="year"></span> Campus Cycle • Crafted for students</div>
+  </footer>
+
+  <!-- Sell Modal -->
+    <dialog id="sell-modal">
+    <div class="modal">
+        <header class="container" style="display:flex; align-items:center; justify-content:space-between;">
+        <h3 class="title" id="sell">List your product</h3>
+        <button class="btn btn-ghost" id="close-sell">Close</button>
+        </header>
+        <div class="container" style="padding-bottom:1rem;">
+        <form id="sell-form">
+            <div class="grid form-grid">
+            <div class="field">
+                <label>Title *</label>
+                <input name="title" required placeholder="eg. DSA Textbook (2nd ed.)" />
+            </div>
+            <div class="field">
+                <label>Category *</label>
+                <select name="category" required>
+                <option value="all">All</option>
+                <option value="books">Books</option>
+                <option value="furniture">Furniture</option>
+                <option value="stationary">Stationary</option>
+                <option value="utensils">Utensils</option>
+                <option value="electronics">Electronics</option>
+                <option value="others">Others</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Price (₹) *</label>
+                <input name="price" type="number" min="0" step="1" required placeholder="eg. 499" />
+            </div>
+            <div class="field">
+                <label>Quantity *</label>
+                <input name="quantity" type="number" min="1" step="1" required value="1" />
+            </div>
+            <div class="field">
+                <label>Colour</label>
+                <input name="colour" placeholder="eg. Black" />
+            </div>
+            <div class="field">
+                <label>Quality *</label>
+                <select name="quality" required>
+                <option>Like New</option>
+                <option>Very Good</option>
+                <option>Good</option>
+                <option>Fair</option>
+                <option>Used</option>
+                </select>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+                <label>How old is it? *</label>
+                <input name="age" required placeholder="eg. 6 months" />
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+                <label>Description</label>
+                <textarea name="description" placeholder="Add useful details like condition, accessories included, pickup location on campus etc."></textarea>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+                <label>Image / Video URL</label>
+                <input name="media" placeholder="Paste image or video link" />
+            </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:.6rem; margin-top:1rem;">
+            <button type="button" class="btn btn-ghost" id="reset-form">Reset</button>
+            <button class="btn btn-primary" type="submit">Add to marketplace</button>
+            </div>
+        </form>
+        </div>
+       
+    </div>
+    </dialog>
+
+    <!-- Link to JS -->
+    <script src="app.js"></script>
+
+
+  <!-- Cart Drawer -->
+  <aside class="drawer" id="cart-drawer" aria-label="Shopping cart">
+    <header>
+      <strong>Cart</strong>
+      <button class="btn btn-ghost" id="close-cart">Close</button>
+    </header>
+    <div class="items" id="cart-items"></div>
+    <footer>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <strong>Total</strong>
+        <strong>₹ <span id="cart-total">0</span></strong>
+      </div>
+      <button class="btn btn-primary" id="checkout">Checkout</button>
+    </footer>
+  </aside>
+  <script>
+    /* ================================
+       Data (starter catalog)
+       ================================ */
+    const CATEGORIES = [
+      { key: 'books', label: 'Books' },
+      { key: 'furniture', label: 'Furniture' },
+      { key: 'stationary', label: 'Stationary' },
+      { key: 'utensils', label: 'Utensils' },
+      { key: 'electronics', label: 'Electronics' },
+      { key: 'others', label: 'Others' },
+    ];
+
+    const initialProducts = [
+  { id: 'p1', title: 'DSA Textbook (2nd ed.)', category: 'books', price: 399, quantity: 1, media: 'https://m.media-amazon.com/images/I/81Wq+YgfFuL._UF350,350_QL50_.jpg', description: 'Highlights on key chapters. No torn pages.' },
+  { id: 'p2', title: 'Hostel Study Table', category: 'furniture', price: 1200, quantity: 1, media: 'data:image/jpeg;base64,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', description: 'Compact, sturdy. Minor scuffs at edges.' },
+  { id: 'p3', title: 'Scientific Calculator FX-991ES', category: 'electronics', price: 750, quantity: 1, media: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMSEhITERIWFRIVGRYXFhcVFxUZFRIQFRUWFxUVFRUZISgiGxolHR0XIjEhJSkrLi4uGB8zODMsNygtMCsBCgoKDg0OGg8QGi0lIB8tLS0tLS0tLS0tLS0tMC0rLS0tLS0tLSstLS0rLS0tLS0rLS0tLS0tLS0uLS0tLS0tLf/AABEIAOEA4QMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABAcDBQYCAQj/xABNEAABBAADAwQMCQsCBgMAAAABAAIDEQQSIQUxQRMiUWEGBzIzNHFyc4GTsbIUFyRCUlSRodIWIzVTYmSUs8HC0VWSFXSEouHxQ6Pw/8QAGAEBAQEBAQAAAAAAAAAAAAAAAAIBAwT/xAAgEQEBAAICAgIDAAAAAAAAAAAAAQIREjEDIUFRBBMy/9oADAMBAAIRAxEAPwC8UREBERAREQEREBEWsx/ZFg4HZJ8Xh4n/AEZJo2O+xxBQbNFo/wAs9m/6jg/4mD8Sflns3/UcH/EwfiQbxFo/yz2b/qOD/iYPxJ+Wezf9Rwf8TB+JBvEWkHZhs7/UMJ/EQ/iX38rdn/X8L/EQ/iQbpFpvyt2f9fwv8RD+JPyt2f8AX8L/ABEP4kG5RaQ9mGzt3/EMJf8AzEP4luIpWvAcxwc07i0ggjqIQe0REBERAREQEREBERAREQEREBERAREQVx26OyabDQw4bCuLJsSXXI3uo4GVmyng5xIAPQHcaKoV2z2MceVdR4niSeklXD23he0cGDu5L2vffsCr+Paow2KxDiJOewsD4i1ssR5Rj8zC8EahpadNzjqqibWlGHw/613T6OlfBBht/KurxhdOOzCCi04RzgZROXufFyjsQyVjmuIEeXuGBp0+e/TVSZ+zqJzy4YeSyGjOZAZBQxIzNLg6nN5UFu8WwaBaxyLcNhiLEjz4k+CYf6b1I7IdqDEyteA8BsbI80jmukkLS4mSRzQAXHMBu3NC1toJXwTD/TenwPD/AE3qMhQSPgmH+m9ffgkH03qTFtKMOBOFiPNLSNaJNU4A2AR4v63mm2tGcpbhIWkG9WtLSeTcynANFiyH0TvCDWyYGAjR7r6wui7AtvzbLxETw8/BJHBs0ZPMyHQygcHN32N9Uta/aMeV7RhowX5qdoTGXOLhk5ooCyAOgMHA3mxTQcNECLt7QesFzbCG36mRYsMeYzyR7FlULEREBERAREQEREBERAREQEREBERBUHbb/SWD83/e9VVt7v8AJ4z7Vavbc/SOC83/AHvVfN7F8ZjsRN8FbHla5wJe6qc0Rkj/AOwV4iql1E3tzSLsfiq2p+7esd/hPiq2p+7esd/hOUS1mXZ3Tijru/N0GCQC7y3mMdmqoO40vMDdn5ee7Eh5DDTOTppyjlGguGtOzEGtQQNDqtr8VW1P3b1jv8J8VW1P3b1jv8LOUa08seCLxlfOI8rrtrC4SDPlNWLaTyel33Vncsrf+H5hfwkNAJOsZzEkU3doAMwLuJrSrWxk7V+02guc7CtaN5dKQB4yQvfxV7U/dvWO/wALeUGg2kMNlj+DmXOARJymXKTpTmVu42DfBRzhJBvjeN3zXcQSOHQCfQV0z+1btMCycKB1yED2KS3tf7Z4Tw6HSp3811ZdNNDRpOUHJvwkjbzRvFb7Y4VW+7GnH7CtlivBYvLb7WrabT7BtsxxSSSSxuY1pc8CZ5JbXO0O/T2LW7QiLcKxrqzNkyurUZmuANHotJZR+nsL3DPJb7AsqxYTuGeS32BZVKxERAREQEREBERAREQEREBERAREQVB23f0jgvN/3uXrtW99xnnZP5eFXntvfpDBeb/vcsnawH5zF+el/l4Rbf5Rk6/E7Xazls7SwRgnM4jK51EhuhsONWG7610sKNs3G4l03Jzcm2m5iBE8ZwDlcGP5QjmuIvQ8Lqwo+1djsjZLI2TK6S87nsgyOzGzyn5sXZAHOcBu14GXsvZ1hs3KSNkkaxz9IQXEgEhx5MEi0vGY7c24UHBbUZLJIxocCwubbmuaJCx2WQx2OcGuppIvU+JQJ8O/DxG5sRJz5XnIIs2V73P1BYbDb4dZ0G7V4vOx8r8LMS0BvKuEUMjzKS8vByZe5GQnf3epFGmOEvyOrxmFZKwskbmYasWRdEEajXeAsyjbOje2Nokk5V28voNBvdQG4VXEqSud+hhxeFZK0skaHNNGje8GxuUePY8DWGMRAMLmvIBdq9hDmuu7sENPoCnKDiNqMbGZGHlAHtj5pHdl4YecdKF2T0A9CS5dRrF2UeB4vzMv8typHbfef+of/NCuHaW0eXweMIYWhsUoOY65gw20tNEekKoNsj83/wBS/wDnBXhNblVH6Twfe2eS32BZlhwXe4/Jb7AsyOgiIgIiICIiAiIgIiICIiAiIgIiIKg7b36QwXm/73LL2sDz8X56X+Vg1i7cH6QwXmz77lxmC7M59nTzCKGOVj3Pcczi05nNibvHAcn/ANy3W4jJfCKmvjkxX1GL1jl8+OTFfUYvWOXO4VHGrhxOGZIKkY14BsBwBAPTqvEuBifeaJjrIcba028DKHHrqhfQqi+OPFfUYvWOT448V9Ri9Y5bxyONXKipr448V9Si9Y5fPjjxX1KL1jlnCnGrixDC5jmtIBIIBcCQCRWoBBI8RHjXJ4nZkmG5Mh7SGvc4ODcS7ks7OSJJOJJDMp8TSLsFcT8cmK+pRescsU3baneWl+z4HFptpc8ktPSL3K8OWLeNWNtHATRYTGZ5Y3h0UxdUTmPL+ToG+UIqh9GzvvpqXa/cD/mnfzwtjtLtsYqaKSL4HE3lGlpPKONNdoaHTVrT7QmL4I3kAF02cgbgXSNNDqFqsd/LZH6ZwPe4/Jb7oWdYMD3uPyW+6FnUugiIgIiICIiAiIgIiICIiAiIgIiIKf7cH6QwXmz77lWO2MnLyZ3Fo1ogXbr0FfarO7cXh+C82ffcqq2/NkxDyW5huqyKOaw6xqKVTpN7RsW6IH828u32XUOA3Dx2PQvreS0/OamtwujxCxbYgzyPfGHyZnyFzwC5rzm7plDd4/FrRWTDyAQPjka6OuSJAJEk5DnUQ1w+bd6Vw6FUnpseH1Zo2OB6RwXkmkiDqJomqzHgL6TuFm1gmJjc9r6L2UCwkGnh9Obpof8Az1JpKVKwtIa4USA4A6EtO4jqX2IAuaHGm2MxGpDb1IHEgXovO1R3kkkvMDC0NIpsZa7K3XXMDw67XgnI0F4oOJyOJGuUAPaW7wbIOvSUNNjLDhhumcTY+YRzdbO7hp9p6NY2IdAAckhJugCAOb0n/CwYSciQAvDGlsgDzfNLo3CrHToPT1KGcDIKqN53fNJ9Gia9tbV3I5RkeTJQttaCwL18f/tbXEeCw+cb7zVoHyFzYQXU9rpbYARyYLmk5r4O106lvsSfksPlt95qFfp/Ad6j8hvuhZ1HwHeo/Ib7oUhc1CIiAiIgIiICIiAiIgIiICIiAiIgp/tx+H4LzZ99yqzbx/PPVp9uTw7BebPvlVnjsXHHNMZmOe00MrTVjUXmo1VkjrAVxN7aax1L62tbIGl+M9C+bVbEdYoZI3uJdztGmN11lFnjX2HduGcYtobm5Nz5GCMsJDsjHsc3u6cLB1H2LdjAXyixE6s28D53RpxX3FPZI4mONoBc17STzjmdueft8ftj4LNdkVvqtK1sUs+Ihz3rqeNnhu0Qetoxta5oa49wH2a5spGZ4FDgR7Udbo2h7S9zS7M527nBuUN66Bu+jqWZ5MghY1hBYwMIaS7lHtvngAWDR3arFKDloeMDrIAv7ANeoIPWHjaQcz2tAA37zqBoOJqzXUvDa6lmdiWnlGiF0j3MqOmB3JltHNlIN6AjxEngFF2VLkkMkrLaWyAtbzRb7oNA3AE6dCfIzNeOkfatzjD8lj8tvtC180mHyF8WGmD3ZmB5sxsfvLbcTbwCw2CKDqo71MmB+Bwg78zb+0Jsr9SbP71H5DfdCkKPs/vUXkN90KQuahERAREQEREBERAREQEREBERAREQU925vDsF5t3vFVtic3wguje5kjXMyuaaLS6xYVk9ufw3Bebd7xVWbcjJkfV1pdEjpqwPSrnSb2xdkLjHO2MTCdgY3JIG5LbrplzO3Gxv1pStjYWZ0jRhy3M4NHOEbgXP7luV5ANm9ToPbpeYecS4vJq3EkFoH0jx3aKRj4sPlu5C6hWciuFVV6VfRqAs9a01iwhJcWOFEFzTR4tB8fR1rJjoHRRtkc9oDgcjafmcQ4AtJoBvNOYb7BHSscLI/wD4ifYbrnV96juZDZz79eJ7rrWjY7Pjc8tyOyvzhoJJyt0BzOIBIA1s9FrxtGantBlEklOErRG5nJPa4ty2az6a3Q3oyKLkyZC+ge5bo06DeeB9B4KJAyKjXdjf0ZfTxtPkb7D4CctIw8rWh5pwcTem6srSeJ00J4XrWogBtzXVbcwNbraSNOrRZMZyMZDg+XleBJLcvWCCTu4de9ecGyEuoFwj11bq8N8Wn2JPthtIzMbC5zmuY5rMoB1Y0tFAjgasXr3Ou8XuJ3XhIT0ub7Wrn3jDZqbm6id5dehNaAenguhxFfBYq3Z2+1qQr9Q7O71F5DPdCkKNs3vMXkM90KSoUIiICIiAiIgIiICIiAiIgIiICIiCne3R4bgvNv8AeVZ7QmcJZGsZmc8Fo1rumOafarM7dXhuC82/3lXMzIjM/lZCygCCDTgdd3/77Fc6Te2hnhlpgka0U57rbkAJc2MVlYKGjWnrzWpbcZPTRDG05A0m2B5pskb7PNOmZrfQSNxWHGta3IY5c4zPbRlY85OaWPDQAW5udbdaoXqpsmGw2SMvxDo3uZbqLXDMBIayDnDuY9+8vodITprXRyPLs7w0mgKaGtFNj5NugFDQC9NdelTMdjpXxuzQRXLmBkrUjXQUN4vS79lYQxgkytcHMqzzw+jkcS3lGhoOtHQcRxtQMfNla3K83mfbb0aBly6ek68d3BBPwsskYJYwOy2SXWWtDgGc4DrIF2NSFixkksz+VkawUMnMFDeXDTp3/YvL3/mnO+dZ49QO5R3zVNK1jy6MOdl1u2h1NPXpxQdBE/FtLQyFlft5tC55bzhYA1HEa6HWm1qoIpC5xy2+TO7K2x3Vu0GvXopWL5AFpOJew0DQDnU7nEgH5utdO+1hw3J8oQJCYxVPs2BQzU6gdDmo0N25ZNjLjsbiZs0ToowSbdlac98pnuyTrZOvQ4qdOKwkQ6HN9oWp2kIGH8ziXvfbaGXmua50ma3aEENEdjXUnhu2uIJ+CRXvzN9oWxlfqTZneYvIZ7oUlRdl95h8hnuhSlChERAREQEREBERAREQEREBERAREQU526/DcF5uT3gqv2rEXSuDWlx6AL0VoduzwzBebk94Lg8OfzkvlN+yjX9Vc6Te2jZsuXhA/wBDSsMeDLryxk1oaG49B61ZmFxNsjaX5stk2SQ0nQMF8A0D0uPQuM2M8XPRHfpPs4HxLWNazZkp3QP9DSsUGDLjzWEgGjlbddPp6laM2JjdkyuBALvnXzKYG6EDINHcz5uvSuF2I4HlqI79J9hDaK1qLPskkDJHI82b5hIDaFalos3m4bq61HwmzpJLMURcBoS0bj0HrVkuxjH5CDrq424EMzEVGzQUxoAocMzh1nT9r2ZmTFajWZ5Ggdv5Mg0ekB2q8/n8l8XjuUTllqbc5iexuTQxQSv33ce4Cq3en/woWB2c+XuI3OYCA4tbeXdY8dK6cLPFwIbu35RVDXX+pJXB9gEzMkxJBHwiR1WNQWR5d/An+q8s/Ly/XcvXrSf2XW3OY7Yb2AuZBNlbZc5zNANNdBu36noXrFn5NH5TfaFbmBni1ogN4h2Xdrdu4ilT8x+Sx1utteKxS9H43mvkx9mOXJ+p9k94h82z3QpSibI7xD5uP3Apa6uwiIgIiICIiAiIgIiICIiAiIgIiIKc7dnhmB83J7wVZ4zZvLSP1Aogai7O9WX27T8swPm5Peaq7OMayR4dmskVQJuxVADirnSb2+x9hDy1rszA195SW91lNH71q8Lsrlc4JaMjiw6Xbm766l2snZVFkbykT46PdCKYA5msDG86wOa3TqXJ7O2kxhlLswzyOeNL5rt11xWwTfyJcKt8VmjVAkWAReUmt/FavC7K5XNZaMrizUXzm1fo1C6wdl+HIYCZeber7edQ0ZQaFNGXQdZXNbO2kxnK58wzSPeNL5rqrdx0WsSo+wxxrnRiwCLbwO7duvf4iFrcLsrlc1kAtcWai+c2rrq1C6+Tszw7yC7lAbJ1BdQOWmN0FMbWjdas6rl9m7SYzlM4cM0jnjS+a4N31x0RrYy9ihkIpsUdWKEbhZFWDZOo/qtPgdmcrZOXmvLCCLstono01H3rqz2UxgjlWvaRoLje3mjUN16L379dSVzeyNotjzWHWZHPbQs84NAGnGwk6Gzl7ES/LXJx6AjmEWCBlPi43rv3rXYo/JmeUPuIXSflXEKEgkaRpRjcLcAMx53EnU8NeC5jFn5M3yh7Vk6Z7fqjY/g8Hm4/cCmKHsbweDzcfuBTFzWIiICIiAiIgIiICIiAiIgIiICIiCm+3d4bgPNy+81V/FCHSSOO8HKCCRQLTe7xrv8At4H5ZgPNy+8xVljdpGGR9BpvWjYNgcCrib26xmw4nNjzOkcHtJIL300lz2OAtxvdv03rldm4BjzKHAnLI5g1I5rfFxU+bsokiAAdh5A05W5XknKS511ppftWs2diXND3cpCC55cRI4sNmrLekG93Ciks1sdRF2MYYhhp5zXoS5ugoZhzjbSbAP7BXN7MwEbzLnF5ZHsGpHNZXRxN/ctieyuQnusKS0lt2G2GU1p5oGZtDS9wHWtPgsc6N7ml0fPe55c4kMzEWaPQaAC3Zqusj7FsKWscGuIdfzjoRV9y41v7k6irOhC5nZeAZJnDxdSOYNSOa0Nq6rpUqPszmO8Q6WddLcavRtZnHSydTWp0Wt2Zji1xaXMGdznlzzQDiNdb3GgtHXu7G4iWiW36NIPKudWdrXH5xrePHS5nY+BY/NmFkSuYDZFBoZRsEUbO9T5eyF8QLmyYeQjKAA55cRRAIHQ0Ab64AWtFg9pPiDgA05nF+t906gd3DQLJZZ6HaHseiflMtuO4Hli+hp0ONLk8UfkrfGPapUXZdM0aMj/7v8qJivBW+Me1GP1VsTwbD+aj9wKaoOwvBsP5qP3GqcuaxERAREQEREBERAREQEREBERAREQUx28j8twHm5vfYuQ2Licj56qyWeOqdXou13Xb+2VJkwuNYCWQF8ctfNbIW5HnqzAg+UFTXLve7MzMHdLSQa6NOCuJqz9o4zKBQGrjlqudDlblcfSTr02OGnLdjOIyfCKG+Vw8QF0PvXPCTEfTk/3OXiFsrbyl4vfROp6T1rWLBl2gOblJOgzW0Cn2bA1Niq1037lpOxOXKJ9Q25Xjd9ENofeft4Cyudz4j6cn2lY4o5W3lL23vokWetBZU2PYAC3WwNL1DiHXfUDk4a2fRz3YdO1nLZtG8q6+sNaKaKHSfRZXM5p/pyf7nLxE2Vt5S9t76JFnpPWtFly4lgDqkzEVWgAd3Oo48SK/ZK5jsTxGRsvQZnX1ANZp95XOmSf6cn+5yxxtlb3Je2/olws+hBYuJ2g0VlNjW9SaHpY3r6VwWKcPgzfH91qO4SkU5zyDvBc6iOsWs+E2dNipocHELklcAP2W/Oe79kCyfElH6r2B4LhvNRe41T1jw8IYxrG7mgNHiAoLIuSxERAREQEREBERAREQEREBERAREQeZYw4FrgHNcCCCAQWnQgg7wuEx3ai2Y95exkkBJJIhkc1tnoa6wB1Cgu9RBXfxO4D9bivWt/AvnxOYD9bivWt/ArFRNiuvicwP67FetZ+BfPibwP67FetZ+BWMibFcfE1gf12K9Yz8CfE1gf1+K9ZH+BWOibFb/E1gv1+L9ZH+BD2mcF9YxfrI/wACshFuxWnxK4G7M+LI6OVYB9zF1vYx2H4PZ4d8FhDXO7qRxc+Rw6C9xJA6hQ6lvkWAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIP/2Q==', description: 'Barely used. Includes cover.' },
+  { id: 'p4', title: 'Ballpoint Pens (Pack of 10)', category: 'stationary', price: 60, quantity: 10, media: 'https://m.media-amazon.com/images/I/811XuXbfv0L._UF1000,1000_QL80_.jpg', description: 'Smooth writing pens.' },
+  { id: 'p5', title: 'Non-stick Frying Pan', category: 'utensils', price: 300, quantity: 1, media: 'https://ushashriram.in/cdn/shop/products/41au8SJ0QKL_bad3c99a-f25d-4c15-8227-57143f1d2c3a.jpg?v=1688867726', description: 'Great for hostel cooking.' },
+  { id: 'p6', title: 'LED Desk Lamp', category: 'electronics', price: 499, quantity: 1, media: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfvRsA4GyuYqiKSdYIH3Dgr9NQf2N4itQDhQ&s', description: 'Three brightness modes.' },
+  { id: 'p7', title: 'Bean Bag Chair', category: 'furniture', price: 900, quantity: 1, media: 'https://cdn.thewirecutter.com/wp-content/media/2025/07/BEST-BEANBAGS-SUB-2048px-5780.jpg?auto=webp&quality=75&width=1024', description: 'Comfy reading chair.' },
+  { id: 'p8', title: 'Lab Coat', category: 'others', price: 250, quantity: 1, media: 'https://5.imimg.com/data5/SELLER/Default/2023/4/299903180/HI/CM/DD/113201125/navy-blue-lab-coat-500x500.jpg', description: 'Size M. Clean.' },
+];
+
+
+    /* ================================
+       State
+       ================================ */
+    const state = {
+      products: JSON.parse(localStorage.getItem('cc_products') || 'null') || initialProducts,
+      cart: JSON.parse(localStorage.getItem('cc_cart') || '[]'),
+      selectedCategory: null,
+      search: '',
+      sort: 'featured',
+    };
+
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+
+    function save(){
+      localStorage.setItem('cc_products', JSON.stringify(state.products));
+      localStorage.setItem('cc_cart', JSON.stringify(state.cart));
+    }
+
+    /* ================================
+       Rendering
+       ================================ */
+    function renderCategories(){
+      const wrap = $('#cat-grid');
+      wrap.innerHTML = '';
+      const all = document.createElement('button');
+      all.className = 'cat';
+      all.setAttribute('aria-selected', state.selectedCategory === null);
+      all.textContent = 'All';
+      all.onclick = () => { state.selectedCategory = null; renderAll(); };
+      wrap.appendChild(all);
+
+      for (const c of CATEGORIES){
+        const btn = document.createElement('button');
+        btn.className = 'cat';
+        btn.setAttribute('aria-selected', state.selectedCategory === c.key);
+        btn.innerHTML = `<strong>${c.label}</strong><span style="color:var(--text-500); font-size:.95rem">Shop now</span>`;
+        btn.onclick = () => { state.selectedCategory = c.key; renderAll(); };
+        wrap.appendChild(btn);
+      }
+    }
+
+    function productCard(p){
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-img">
+        <img src="${p.media}" alt="${p.title}" />
+      </div>
+      <div class="card-body">
+        <div class="title">${p.title}</div>
+        <div class="meta">
+          <span class="chip">₹ ${p.price}</span>
+          <span>• ${p.quality}</span>
+          <span>• ${p.age}</span>
+        </div>
+        <div class="meta">
+          <span>Colour: <strong>${p.colour || '—'}</strong></span>
+          <span>Qty: <strong>${p.quantity}</strong></span>
+        </div>
+        <p style="color:var(--text-500)">${p.description || ''}</p>
+        <div style="display:flex; gap:.6rem; margin-top:.4rem;">
+          <button class="btn btn-ghost" aria-label="View details">Details</button>
+          <button class="btn btn-primary" aria-label="Add to cart">Add to cart</button>
+        </div>
+      </div>`;
+    
+    const [detailsBtn, addBtn] = card.querySelectorAll('button');
+    detailsBtn.onclick = () => openDetails(p);
+    addBtn.onclick = () => addToCart(p.id);
+    return card;
+  }
+
+
+    function renderProducts(){
+      const grid = $('#product-grid');
+      grid.innerHTML = '';
+
+      let list = [...state.products];
+      // filter by category
+      if (state.selectedCategory){ list = list.filter(p => p.category === state.selectedCategory); }
+      // filter by search
+      if (state.search.trim()){
+        const q = state.search.toLowerCase();
+        list = list.filter(p => Object.values(p).join(' ').toLowerCase().includes(q));
+      }
+      // sorting
+      if (state.sort === 'price-asc') list.sort((a,b)=>a.price-b.price);
+      if (state.sort === 'price-desc') list.sort((a,b)=>b.price-a.price);
+      if (state.sort === 'newest') list.sort((a,b)=> (b._created || 0) - (a._created || 0));
+      if (state.sort === 'oldest') list.sort((a,b)=> (a._created || 0) - (b._created || 0));
+
+      if (!list.length){
+        grid.innerHTML = `<div class="card" style="grid-column:1/-1; padding:1rem;">No products match your filters.</div>`;
+        return;
+      }
+
+      for (const p of list){ grid.appendChild(productCard(p)); }
+    }
+
+      function renderCart() {
+  const container = $('#cart-items');
+  const totalEl = $('#cart-total');
+  const countEl = $('#cart-count');
+  container.innerHTML = '';
+  let total = 0;
+  let count = 0;
+
+  for (const line of state.cart) {
+    const p = state.products.find(x => x.id === line.id);
+    if (!p) continue;
+
+    total += p.price * line.qty;
+    count += line.qty;
+
+    const row = document.createElement('div');
+    row.className = 'line';
+    row.style.display = "flex";
+    row.style.gap = "0.5rem";
+    row.style.alignItems = "center";
+
+    row.innerHTML = `
+      <div class="thumb" style="width:58px; height:58px; flex-shrink:0;">
+        <img src="${p.media}" alt="${p.title}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+      </div>
+      <div style="flex-grow:1">
+        <div><strong>${p.title}</strong></div>
+        <div style="font-size:.9rem; color:var(--text-500)">₹${p.price} × ${line.qty}</div>
+      </div>
+      <div class="qty" style="display:flex; align-items:center; gap:0.3rem">
+        <button aria-label="Decrease">-</button>
+        <span style="padding:.3rem .6rem">${line.qty}</span>
+        <button aria-label="Increase">+</button>
+      </div>
+    `;
+
+    const [decBtn, , incBtn] = row.querySelectorAll('button');
+    decBtn.onclick = () => updateQty(p.id, line.qty - 1);
+    incBtn.onclick = () => updateQty(p.id, line.qty + 1);
+
+    container.appendChild(row);
+  }
+
+  totalEl.textContent = total;
+  if (countEl) countEl.textContent = count; // optional if you have a cart count element
+}
+
+
+    function renderAll(){
+      renderCategories();
+      renderProducts();
+      renderCart();
+    }
+
+    function updateQty(id, qty){
+      if (qty <= 0){
+        state.cart = state.cart.filter(l => l.id !== id);
+      } else {
+        const line = state.cart.find(l => l.id === id);
+        if (line) line.qty = qty;
+      }
+      save();
+      renderCart();
+  }
+
+
+    /* ================================
+       Details (simple alert for demo)
+       ================================ */
+    function openDetails(p){
+      alert(`${p.title}\n\nPrice: ₹ ${p.price}\nQuality: ${p.quality}\nAge: ${p.age}\nColour: ${p.colour}\nQuantity: ${p.quantity}\n\nDescription: ${p.description || '—'}`);
+    }
+
+    /* ================================
+       Cart actions
+       
+    function addToCart(id){
+      const line = state.cart.find(x => x.id === id);
+      if (line) line.qty++; else state.cart.push({ id, qty: 1 });
+      save();
+      renderCart();
+    }
+    function changeQty(id, delta){
+      const line = state.cart.find(x => x.id === id);
+      if (!line) return;
+      line.qty += delta;
+      if (line.qty <= 0) state.cart = state.cart.filter(x => x.id !== id);
+      save();
+      renderCart();
+    }
+================================ */
+
+
+ /* ================================
+   Sell form handling (with local file support)
+   ================================ */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Simple shortcut for selecting elements
+  const $ = (selector) => document.querySelector(selector);
+
+  const sellModal = $('#sell-modal');
+  const openSell = $('#open-sell');
+  const footerSell = $('#footer-sell');
+  const closeSell = $('#close-sell');
+  const resetFormBtn = $('#reset-form');
+  const sellForm = $('#sell-form');
+
+  // --- Safety check: make sure elements exist ---
+  if (!sellModal || !openSell || !footerSell || !closeSell || !resetFormBtn || !sellForm) {
+    console.error('Sell form elements not found — check your HTML IDs.');
+    return;
+  }
+
+  // --- Event Listeners ---
+  openSell.onclick = () => sellModal.showModal();
+  footerSell.onclick = () => sellModal.showModal();
+  closeSell.onclick = () => sellModal.close();
+  resetFormBtn.onclick = () => sellForm.reset();
+
+  sellForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+
+    // Sell Page Handle local image/video upload
+    const fileInput = e.target.querySelector('#media');
+    const file = fileInput?.files[0];
+    let mediaURL = '#';
+    if (file) {
+      mediaURL = URL.createObjectURL(file); // Temporary blob URL for preview
+    } else if (fd.get('media') && typeof fd.get('media') === 'string') {
+      mediaURL = fd.get('media').toString().trim();
+    }
+
+    const product = {
+      id: 'p' + Math.random().toString(36).slice(2, 8),
+      _created: Date.now(),
+      title: fd.get('title')?.toString().trim() || 'Untitled',
+      category: fd.get('category'),
+      price: Number(fd.get('price')) || 0,
+      quantity: Number(fd.get('quantity')) || 1,
+      colour: fd.get('colour')?.toString().trim() || '—',
+      quality: fd.get('quality'),
+      age: fd.get('age')?.toString().trim() || '—',
+      media: mediaURL,
+      description: fd.get('description')?.toString().trim() || '',
+    };
+
+    // Add to state (assuming global `state`, `save()`, and `renderAll()` exist)
+    state.products.unshift(product);
+    save();
+    sellModal.close();
+    e.target.reset();
+
+    // Reset filters and re-render
+    state.selectedCategory = null;
+    state.search = '';
+    state.sort = 'featured';
+    renderAll();
+  });
+
+});
+
+
+
+
+    /* ================================
+       Drawer / Misc UI
+       ================================ */
+    const drawer = $('#cart-drawer');
+    $('#open-cart').onclick = () => { drawer.classList.add('open'); };
+    $('#footer-cart').onclick = () => { drawer.classList.add('open'); };
+    $('#close-cart').onclick = () => { drawer.classList.remove('open'); };
+    $('#checkout').onclick = () => {
+      if (!state.cart.length) return alert('Your cart is empty.');
+      alert('Checkout complete! (demo)');
+      state.cart = [];
+      save();
+      renderCart();
+      drawer.classList.remove('open');
+    };
+
+    $('#search').addEventListener('input', (e)=>{ state.search = e.target.value; renderProducts(); });
+    $('#sort').addEventListener('change', (e)=>{ state.sort = e.target.value; renderProducts(); });
+    $('#clear-filters').onclick = () => { state.search=''; $('#search').value=''; state.selectedCategory=null; $('#sort').value='featured'; state.sort='featured'; renderAll(); };
+
+    // Footer year
+    $('#year').textContent = new Date().getFullYear();
+    $('#logout-btn').addEventListener('click', () => {
+      window.CampusCycleSession.clearUser();
+      window.location.reload();
+    });
+
+    // Initial paint
+    renderAll();
+
+    // ✅ Add to cart
+async function addToCart(productId, userId = 1) {
+  try {
+    const response = await fetch('http://localhost:5000/cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: userId,
+        product_id: productId,
+        quantity: 1
+      })
+    });
+    const data = await response.json();
+    alert(data.message);
+  } catch (err) {
+    console.error('Cart error:', err);
+  }
+}
+
+  </script>
+  <script src="user-session.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "p1",
+    "title": "DSA Textbook (2nd ed.)",
+    "category": "books",
+    "price": 399,
+    "quantity": 1,
+    "media": "https://m.media-amazon.com/images/I/81Wq+YgfFuL._UF350,350_QL50_.jpg",
+    "description": "Highlights on key chapters. No torn pages."
+  },
+  {
+    "id": "p2",
+    "title": "Hostel Study Table",
+    "category": "furniture",
+    "price": 1200,
+    "quantity": 1,
+    "media": "https://chairstudio.in/wp-content/uploads/2019/07/Hostel-Study-Tables-Chairs2.jpg",
+    "description": "Compact, sturdy. Minor scuffs at edges."
+  },
+  {
+    "id": "p3",
+    "title": "Scientific Calculator FX-991ES",
+    "category": "electronics",
+    "price": 750,
+    "quantity": 1,
+    "media": "https://images-cdn.ubuy.co.in/6628cb152af51e6708044b39-casio-fx-991es-plus-2-scientific.jpg",
+    "description": "Barely used. Includes cover."
+  },
+  {
+    "id": "p4",
+    "title": "Ballpoint Pens (Pack of 10)",
+    "category": "stationary",
+    "price": 60,
+    "quantity": 10,
+    "media": "https://m.media-amazon.com/images/I/811XuXbfv0L._UF1000,1000_QL80_.jpg",
+    "description": "Smooth writing pens."
+  },
+  {
+    "id": "p5",
+    "title": "Non-stick Frying Pan",
+    "category": "utensils",
+    "price": 300,
+    "quantity": 1,
+    "media": "https://ushashriram.in/cdn/shop/products/41au8SJ0QKL_bad3c99a-f25d-4c15-8227-57143f1d2c3a.jpg?v=1688867726",
+    "description": "Great for hostel cooking."
+  },
+  {
+    "id": "p6",
+    "title": "LED Desk Lamp",
+    "category": "electronics",
+    "price": 499,
+    "quantity": 1,
+    "media": "https://www.mojolife.in/cdn/shop/files/desk-1_2.png?v=1727094719",
+    "description": "Three brightness modes."
+  },
+  {
+    "id": "p7",
+    "title": "Bean Bag Chair",
+    "category": "furniture",
+    "price": 900,
+    "quantity": 1,
+    "media": "https://i.etsystatic.com/7497951/r/il/9ecfda/5652394475/il_570xN.5652394475_eh47.jpg",
+    "description": "Comfy reading chair."
+  },
+  {
+    "id": "p8",
+    "title": "Lab Coat",
+    "category": "others",
+    "price": 250,
+    "quantity": 1,
+    "media": "https://5.imimg.com/data5/SELLER/Default/2023/4/299903180/HI/CM/DD/113201125/navy-blue-lab-coat-500x500.jpg",
+    "description": "Size M. Clean."
+  }
+]

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Cart Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .products, .cart { display: flex; flex-wrap: wrap; gap: 20px; }
+        .product-card, .cart-item { border: 1px solid #ccc; padding: 10px; width: 150px; text-align: center; }
+        .cart { margin-top: 30px; flex-direction: column; }
+        .total { font-weight: bold; margin-top: 10px; }
+        button { padding: 5px 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>Products</h1>
+    <div class="products" id="products"></div>
+
+    <h1>Cart</h1>
+    <div class="cart" id="cart"></div>
+    <div class="total" id="total">Total: ₹0</div>
+
+    <script>
+        // Sample products array
+        const products = [
+            { name: "Apple", price: 50 },
+            { name: "Banana", price: 20 },
+            { name: "Carrot", price: 30 },
+            { name: "Mango", price: 60 }
+        ];
+
+        const productsDiv = document.getElementById("products");
+        const cartDiv = document.getElementById("cart");
+        const totalDiv = document.getElementById("total");
+        let cart = [];
+
+        // Create product cards
+        products.forEach(product => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.dataset.id = product.name;
+            card.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>₹${product.price}</p>
+                <button>Add to Cart</button>
+            `;
+            productsDiv.appendChild(card);
+
+            // Add to Cart button click
+            card.querySelector("button").addEventListener("click", () => {
+                addToCart(product);
+            });
+        });
+
+        // Add product to cart
+        function addToCart(product) {
+            const existing = cart.find(item => item.name === product.name);
+            if(existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            renderCart();
+        }
+
+        // Render cart panel
+        function renderCart() {
+            cartDiv.innerHTML = "";
+            let total = 0;
+            cart.forEach(item => {
+                const cartItem = document.createElement("div");
+                cartItem.className = "cart-item";
+                cartItem.innerHTML = `
+                    <h4>${item.name}</h4>
+                    <p>₹${item.price} x ${item.quantity}</p>
+                `;
+                cartDiv.appendChild(cartItem);
+                total += item.price * item.quantity;
+            });
+            totalDiv.textContent = `Total: ₹${total}`;
+        }
+    </script>
+
+</body>
+</html>

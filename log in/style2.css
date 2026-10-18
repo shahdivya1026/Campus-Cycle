@@ -1,0 +1,160 @@
+/* Import Google font - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-image: url(beige.jpg);
+  background-size: cover; 
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.container {
+  position: relative;
+  max-width: 500px;   /* ↓ reduced width */
+  width: 100%;
+  background: #fff;
+  padding: 15px 20px; /* ↓ reduced padding (less height) */
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.container header {
+  font-size: 1.3rem; /* ↓ slightly smaller */
+  color: #333;
+  font-weight: 500;
+  text-align: center;
+}
+
+.container .form {
+  margin-top: 10px; /* ↓ reduced gap */
+}
+
+.form .input-box {
+  width: 100%;
+  margin-top: 6px; /* ↓ reduced spacing */
+}
+
+.input-box label {
+  color: #333;
+}
+
+.form .input-box input {
+  position: relative;
+  height: 45px; /* ↓ reduced height */
+  width: 100%;
+  outline: none;
+  font-size: 0.95rem;
+  color: #707070;
+  margin-top: 3px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0 40px 0 12px; /* space for eye icon */
+}
+
+.input-box input:focus {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Password box wrapper */
+.password-box {
+  position: relative;
+}
+
+/* Eye icon styling */
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.eye-icon:hover {
+  color: #000;
+}
+
+.form .column {
+  display: flex;
+  column-gap: 12px;
+}
+
+.form .gender-box {
+  margin-top: 7px;
+}
+
+.gender-box h3 {
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 400;
+  margin-bottom: 3px;
+}
+
+.form :where(.gender-option, .gender) {
+  display: flex;
+  align-items: center;
+  column-gap: 40px;
+  flex-wrap: wrap;
+}
+
+.form .gender {
+  column-gap: 5px;
+}
+
+.gender input {
+  accent-color: rgb(130, 106, 251);
+}
+
+.form :where(.gender input, .gender label) {
+  cursor: pointer;
+}
+
+.gender label {
+  color: #707070;
+}
+
+.address input {
+  margin-top: 5px;
+}
+
+.form button {
+  height: 48px;  /* ↓ smaller button */
+  width: 100%;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 400;
+  margin-top: 10px; /* ↓ reduced margin */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgb(130, 106, 251);
+  border-radius: 6px;
+}
+
+.form button:hover {
+  background: rgb(88, 56, 250);
+}
+
+/* Responsive */
+@media screen and (max-width: 500px) {
+  .form .column {
+    flex-wrap: wrap;
+  }
+
+  .form :where(.gender-option, .gender) {
+    row-gap: 12px;
+  }
+}

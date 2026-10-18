@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>Welcome Back</h1>
+                <p>Please enter your details</p>
+            </div>
+            <form class="form-box">
+                <div class="input-group">
+                    <input type="email" id="email" class="input-field" placeholder="" required>
+                    <label for="email" class="floating-label">Email address</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" class="input-field" placeholder="" required>
+                    <label for="password" class="floating-label">Password</label>
+                    <div class="eye-icon" onclick="togglePassword()">👁️</div>
+                </div>
+                <div class="input-group checkbox-group">
+                    <div class="form-col remember-me">
+                        <input type="checkbox" id="remember-me-checkbox" class="checkbox-field">
+                        <label for="remember-me-checkbox">Remember me</label>
+                    </div>
+                    <div class="form-col">
+                        <a href="#" class="form-link">Forgot password?</a>
+                    </div>
+                </div>
+                <button type="submit" class="form-btn form-btn--submit">Sign In</button>
+            </form>
+            <div class="form-divider">
+                <p>Or</p>
+            </div>
+            <div class="form-bottom">
+                <div class="form-socials">
+                    <button type="button" class="form-btn form-btn--social">
+                        <img src="google-logo.jpg" class="btn-icon" alt=""> Log in With Google
+                    </button>
+                </div>
+                <p>Don't have an account? <a href="index2.html" class="form-link">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ================= Toggle Password =================
+    function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.querySelector(".eye-icon");
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeIcon.textContent = "🙈";
+        } else {
+            passwordInput.type = "password";
+            eyeIcon.textContent = "👁️";
+        }
+    }
+
+    // ================= Login Form Submission =================
+    document.querySelector(".form-box").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        // Email validation
+        if (!email.endsWith("@apsit.edu.in")) {
+            return alert("Only @apsit.edu.in emails are allowed ❌");
+        }
+
+        try {
+            const res = await fetch("http://localhost:3000/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert("✅ " + data.msg);
+                // Save user info in localStorage
+                localStorage.setItem("userName", data.user.name);
+                localStorage.setItem("userEmail", data.user.email);
+                window.location.href = "home.html"; // redirect to home page
+            } else {
+                alert("❌ " + data.msg);
+            }
+        } catch (err) {
+            alert("⚠️ Server error: " + err.message);
+        }
+    });
+
+    
+</script>
+<script>
+  // ======= Signup Form =======
+  document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("fullname").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirm-password").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const birthdate = document.getElementById("birthdate").value;
+    const gender = document.querySelector('input[name="gender"]:checked').value;
+    const street = document.getElementById("street").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const state = document.getElementById("state").value.trim();
+
+    if (password !== confirmPassword) {
+      return alert("Passwords do not match ❌");
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name, email, username, password, phone, birthdate, gender, street, city, state
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("✅ Signup successful! Redirecting to login...");
+        window.location.href = "login.html"; // ✅ redirect to login page
+      } else {
+        alert("❌ " + data.error);
+      }
+    } catch (err) {
+      alert("Server error: " + err.message);
+    }
+  });
+
+  // ======= Login Form =======
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value.trim();
+
+      try {
+        const res = await fetch("http://localhost:3000/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("✅ Login successful! Redirecting to home...");
+          localStorage.setItem("userId", data.userId);
+          localStorage.setItem("name", data.name);
+          window.location.href = "home.html"; // ✅ redirect to home page
+        } else {
+          alert("❌ " + data.error);
+        }
+      } catch (err) {
+        alert("Server error: " + err.message);
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
